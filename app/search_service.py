@@ -44,7 +44,7 @@ if __name__ == "__main__":
             print(t["Title"] + " (" + t["Year"] +")") # prints a list of the search results' title and release year
 
         print("----------------------------------")
-        correct_search = input("From the list above, what title were you looking for? Please write in the format of Title, Year (i.e. 'The Avengers, 1998'): ")
+        correct_search = input("From the list above, what title were you looking for? Please write in the format of Title, Year (i.e. The Avengers, 1998): ")
         
         if (correct_search) in org_list:
             i = org_list.index(correct_search) # finds the index of the title the user is looking for in org_list so it can be matched with the one in the parsed_response
@@ -86,3 +86,49 @@ if __name__ == "__main__":
     print(f"MAIN CAST: {cast}")
     print(f"SUMMARY: {summary}")
     print(rating)
+
+
+
+
+    #Youtube search
+    from googleapiclient.discovery import build
+    from googleapiclient.errors import HttpError
+    import urllib.request
+    from bs4 import BeautifulSoup
+
+    YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
+    YOUTUBE_API_SERVICE_NAME='youtube'
+    YOUTUBE_API_VERSION='v3'
+
+    #Source: https://github.com/youtube/api-samples/blob/master/python/search.py
+    def youtube_search(options):
+        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+            developerKey=YOUTUBE_API_KEY)
+
+        # Call the search.list method to retrieve results matching the specified query term.
+        search_response = youtube.search().list(
+            q=options + " trailer",
+            part='id,snippet',
+            maxResults=1
+        ).execute()
+
+        # Add each result to the appropriate list, and then display the lists of
+        # matching videos, channels, and playlists.
+        for search_result in search_response.get('items', []):
+            if search_result['id']['kind'] == 'youtube#video':
+                #videos.append('%s (%s)' % (search_result['snippet']['title']))                  
+                print ('\nYouTube Trailer:\n', search_result['snippet']['title'])
+                print(' ' + 'https://www.youtube.com/watch?v=' + search_result['id']['videoId'])
+            else:
+                print('Sorry, a trailer could not be found for this movie.')
+
+    youtube_search(correct_search)
+
+#query = urllib.parse.quote(options + " trailer")
+#url = "https://www.youtube.com/results?search_query=" + query
+#response = urllib.request.urlopen(url)
+#html = response.read()
+#soup = BeautifulSoup(html, 'html.parser')
+#for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
+ #   print('https://www.youtube.com' + vid['href'])
+
