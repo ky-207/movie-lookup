@@ -86,6 +86,7 @@ if __name__ == "__main__":
     print(f"MAIN CAST: {cast}")
     print(f"SUMMARY: {summary}")
     print(rating)
+    print("----------------------------------")
 
 
 
@@ -93,8 +94,6 @@ if __name__ == "__main__":
     #Youtube search
     from googleapiclient.discovery import build
     from googleapiclient.errors import HttpError
-    import urllib.request
-    from bs4 import BeautifulSoup
 
     YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
     YOUTUBE_API_SERVICE_NAME='youtube'
@@ -112,23 +111,13 @@ if __name__ == "__main__":
             maxResults=1
         ).execute()
 
-        # Add each result to the appropriate list, and then display the lists of
-        # matching videos, channels, and playlists.
+        # Add each result to the appropriate list, and then display the lists of matching videos, channels, and playlists.
         for search_result in search_response.get('items', []):
-            if search_result['id']['kind'] == 'youtube#video':
-                #videos.append('%s (%s)' % (search_result['snippet']['title']))                  
-                print ('\nYouTube Trailer:\n', search_result['snippet']['title'])
+            if search_result['id']['kind'] == 'youtube#video':                 
+                print ('YouTube Trailer:\n', search_result['snippet']['title'])
                 print(' ' + 'https://www.youtube.com/watch?v=' + search_result['id']['videoId'])
             else:
                 print('Sorry, a trailer could not be found for this movie.')
 
     youtube_search(correct_search)
-
-#query = urllib.parse.quote(options + " trailer")
-#url = "https://www.youtube.com/results?search_query=" + query
-#response = urllib.request.urlopen(url)
-#html = response.read()
-#soup = BeautifulSoup(html, 'html.parser')
-#for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
- #   print('https://www.youtube.com' + vid['href'])
 
