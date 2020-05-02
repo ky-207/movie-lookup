@@ -46,6 +46,9 @@ if __name__ == "__main__":
         print("----------------------------------")
         correct_search = input("From the list above, what title were you looking for? Please write in the format of Title, Year (i.e. The Avengers, 1998): ")
         
+        correct_title = correct_search.split(", ")
+        correct_name = correct_title[0]
+
         if (correct_search) in org_list:
             i = org_list.index(correct_search) # finds the index of the title the user is looking for in org_list so it can be matched with the one in the parsed_response
             id = sr[i]["imdbID"] 
@@ -53,6 +56,8 @@ if __name__ == "__main__":
             print("That's not an option from the list above. Please try again.")
     else:
         id = sr[0]["imdbID"]
+        correct_name = title
+        correct_search = title
 
 
     # make another request to match ids
@@ -116,8 +121,10 @@ if __name__ == "__main__":
             if search_result['id']['kind'] == 'youtube#video':                 
                 print ('YouTube Trailer:\n', search_result['snippet']['title'])
                 print(' ' + 'https://www.youtube.com/watch?v=' + search_result['id']['videoId'])
+                print("----------------------------------")
             else:
                 print('Sorry, a trailer could not be found for this movie.')
+                print("----------------------------------")
 
     youtube_search(correct_search)
 
