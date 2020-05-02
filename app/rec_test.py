@@ -132,9 +132,9 @@ if __name__ == "__main__":
             sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
 
             i=0
-            print("Top 5 similar movies to "+correct_name+" are:\n")
+            print("Top 5 similar movies to "+correct_name+" are:")
             for element in sorted_similar_movies:
-                print(get_title_from_index(element[0]))
+                print(" + " + get_title_from_index(element[0]))
                 i=i+1
                 if i>4:
                     break
