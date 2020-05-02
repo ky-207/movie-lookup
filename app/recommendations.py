@@ -27,20 +27,23 @@ cosine_sim = cosine_similarity(count_matrix)
 
 def get_title_from_index(index):
     return df[df.index == index]["title"].values[0]
-def get_index_from_title(title):
+def get_index_from_title(title, date):
     return df[df.title == title]["index"].values[0]
 
-movie_user_likes = "Iron Man"
-movie_index = get_index_from_title(movie_user_likes)
-similar_movies = list(enumerate(cosine_sim[movie_index])) #accessing the row corresponding to given movie to find all the similarity scores for that movie and then enumerating over it
-
-sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
-
-i=0
-print("Top 5 similar movies to "+movie_user_likes+" are:\n")
-for element in sorted_similar_movies:
-    print(get_title_from_index(element[0]))
-    i=i+1
-    if i>4:
+movie_user_likes = "Iron Man" #make dynamic
+while True:
+    try:
+        movie_index = get_index_from_title(title)
+        similar_movies = list(enumerate(cosine_sim[movie_index])) #accessing the row corresponding to given movie to find all the similarity scores for that movie and then enumerating over it
+        sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
+        i=0
+        print("Top 5 similar movies to "+title+" are:\n")
+        for element in sorted_similar_movies:
+            print(get_title_from_index(element[0]))
+            i=i+1
+            if i>4:
+                break
         break
-
+    except IndexError:
+        print("Sorry, we couldn't find any recommendations for that movie.")
+        break
