@@ -7,3 +7,5 @@ virtualenv
 pandas
 numpy
 sklearn
+gspread
+oauth2client
