@@ -150,3 +150,8 @@ if __name__ == "__main__":
         elif youtube.lower() == "no":
             print("Okay, you opted not to watch the trailer.")
             print("----------------------------------")
+            youtube_search(correct_search)
+            break
+        elif youtube.lower() == "no":
+            print("Okay, you opted not to watch the trailer.")
+            print("----------------------------------")
