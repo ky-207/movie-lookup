@@ -6,7 +6,47 @@ import json
 from dotenv import load_dotenv
 import requests
 
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+import webbrowser
+
 load_dotenv()
+
+YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
+YOUTUBE_API_SERVICE_NAME='youtube'
+YOUTUBE_API_VERSION='v3'
+
+# finds YouTube trailer
+def youtube_search(options):
+    """
+    Searches for YouTube video 
+    
+    Source: https://github.com/youtube/api-samples/blob/master/python/search.py
+    Param: options (str) like "Iron Man"
+    Example: youtube_search("Iron Man")
+    Returns: url link to trailer
+    """
+    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+        developerKey=YOUTUBE_API_KEY)
+
+    # Call the search.list method to retrieve results matching the specified query term.
+    search_response = youtube.search().list(
+        q=options + " trailer",
+        part='id,snippet',
+        maxResults=1
+    ).execute()
+
+    # Add each result to the appropriate list, and then display the lists of matching videos, channels, and playlists.
+    for search_result in search_response.get('items', []):
+        if search_result['id']['kind'] == 'youtube#video':                 
+            #print ('YouTube Trailer:\n', search_result['snippet']['title'])
+            #print(' ' + 'https://www.youtube.com/watch?v=' + search_result['id']['videoId'])
+            trailer_url = f"https://www.youtube.com/watch?v=" + search_result['id']['videoId']
+            print("----------------------------------")
+            return trailer_url
+        else:
+            print('Sorry, a trailer could not be found for this movie.')
+            print("----------------------------------")
 
 if __name__ == "__main__":
 
@@ -94,37 +134,18 @@ if __name__ == "__main__":
     print("----------------------------------")
 
 
-
-
-    #Youtube search
-    from googleapiclient.discovery import build
-    from googleapiclient.errors import HttpError
-
-    YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
-    YOUTUBE_API_SERVICE_NAME='youtube'
-    YOUTUBE_API_VERSION='v3'
-
-    #Source: https://github.com/youtube/api-samples/blob/master/python/search.py
-    def youtube_search(options):
-        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-            developerKey=YOUTUBE_API_KEY)
-
-        # Call the search.list method to retrieve results matching the specified query term.
-        search_response = youtube.search().list(
-            q=options + " trailer",
-            part='id,snippet',
-            maxResults=1
-        ).execute()
-
-        # Add each result to the appropriate list, and then display the lists of matching videos, channels, and playlists.
-        for search_result in search_response.get('items', []):
-            if search_result['id']['kind'] == 'youtube#video':                 
-                print ('YouTube Trailer:\n', search_result['snippet']['title'])
-                print(' ' + 'https://www.youtube.com/watch?v=' + search_result['id']['videoId'])
-                print("----------------------------------")
-            else:
-                print('Sorry, a trailer could not be found for this movie.')
-                print("----------------------------------")
-
-    youtube_search(correct_search)
-
+    # YouTube search    
+    while True:
+        youtube = input(f"Would you like to see a trailer for {title_name}? Enter 'Yes' or 'No': ")
+        if youtube.lower() == "yes":
+            print("Okay, pulling up trailer now...")
+            url = youtube_search(correct_search)
+            webbrowser.open(url)
+            break
+        elif youtube.lower() == "no":
+            print("Okay, you opted not to watch the trailer.")
+            print("----------------------------------")
+            break
+        elif youtube.lower() == "no":
+            print("Okay, you opted not to watch the trailer.")
+            print("----------------------------------")
