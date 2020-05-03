@@ -26,6 +26,11 @@ After obtaining an API Key, update the contents of the ".env" file to specify yo
 
     YOUTUBE_API_KEY="abc123"
 
+### GOOGLE SPREADSHEET STUFF (TO FILL IN)
+GOOGLE_SHEET_ID
+GOOGLE_SHEET_NAME
+getting the whole API key/credentials/sheets set up...
+
 ## Virtual Environment Setup
 
 Create and activate a new Anaconda virtual environment from the command-line:
