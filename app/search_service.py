@@ -50,7 +50,7 @@ def print_sr(search_results, readable_list):
     """
 
     for title in search_results:
-            readable_list.append(title["Title"] + ", " + title["Year"])
+            readable_list.append(title["Title"] + ", " + title["Year"].replace("–","-"))
             print(title["Title"] + " (" + title["Year"] +")") # prints a list of the search results' title and release year
 
     return None
@@ -124,16 +124,18 @@ if __name__ == "__main__":
         print_sr(sr, org_list)
         print("----------------------------------")
 
-        correct_search = input("From the list above, what title were you looking for? Please write in the format of Title, Year (i.e. The Avengers, 1998): ")
-        
-        articles = ['a', 'an', 'of', 'the', 'is', 'with', 'in']
-        correct_search = title_except(correct_search, articles)
+        while True:
+            correct_search = input("From the list above, what title were you looking for? Please write in the format of Title, Year (i.e. The Avengers, 1998): ")
+            
+            articles = ['a', 'an', 'of', 'the', 'is', 'with', 'in']
+            correct_search = title_except(correct_search, articles)
 
-        if (correct_search) in org_list:
-            i = org_list.index(correct_search) # finds the index of the title the user is looking for in org_list so it can be matched with the one in the parsed_response
-            id = sr[i]["imdbID"] 
-        else:
-            print("Sorry, there was no match to the list above. Please try again and make sure you're writing in the correct format.")
+            if (correct_search) in org_list:
+                i = org_list.index(correct_search) # finds the index of the title the user is looking for in org_list so it can be matched with the one in the parsed_response
+                id = sr[i]["imdbID"] 
+                break
+            else:
+                print("Sorry, there was no match to the list above. Please try again and make sure you're writing in the correct format.")
     else:
         id = sr[0]["imdbID"]
         correct_name = title
@@ -151,12 +153,7 @@ if __name__ == "__main__":
     director = parsed_response["Director"]
     cast = parsed_response["Actors"]
     summary = parsed_response["Plot"]
-
-    # rating preference on Rotten Tomatoes, but will resort to IMDb's rating if non-existent
-    if "Rotten Tomatoes" in parsed_response["Ratings"][1]["Source"]:
-        rating = "ROTTEN TOMATOES RATING: " + parsed_response["Ratings"][1]["Value"]
-    else:
-        rating = "IMDb RATING: " + parsed_response["Ratings"][0]["Value"]
+    rating = parsed_response["Ratings"][0]["Value"]
 
     #
     # INFO OUTPUTS
@@ -170,7 +167,7 @@ if __name__ == "__main__":
     print(f"DIRECTOR: {director}")
     print(f"MAIN CAST: {cast}")
     print(f"SUMMARY: {summary}")
-    print(rating)
+    print(f"IMDb RATING: {rating}")
     print("----------------------------------")
 
 
