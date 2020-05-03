@@ -1,6 +1,4 @@
-# Json file
 spreadsheet_credentials.json
-# Environments
 .env
 .venv
 env/
