@@ -5,6 +5,7 @@ import json
 
 from dotenv import load_dotenv
 import requests
+import re 
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -41,6 +42,43 @@ def get_response(title):
 
     parsed_response = json.loads(response.text)
     return parsed_response
+
+# title lookup results from search
+def print_sr(search_results, readable_list):
+    """
+    Prints results of movie lookup (movie/tv show title and release year)
+
+    Param: search_results (list) like sr and readable_list (str) like org_list
+
+    Example: print_sr(sr, org_list)
+
+    Returns: None
+    """
+
+    for title in search_results:
+            readable_list.append(title["Title"] + ", " + title["Year"])
+            print(title["Title"] + " (" + title["Year"] +")") # prints a list of the search results' title and release year
+
+    return None
+
+# Titlecase string
+def title_except(s, exceptions):
+    """
+    Transforms string so that it will capitalize the first letter in each word, with some exceptions
+
+    Source: https://stackoverflow.com/questions/3728655/titlecasing-a-string-with-exceptions/3729060
+
+    Param: s (str) like "Hi, my name is john smith" and exceptions (list of str) like ["a", "an", "is"]
+
+    Example: title_except("Hi, my name is john smith", ["a", "an", "is"])
+
+    Returns: "Hi, My Name is John Smith"
+    """
+    word_list = re.split(' ', s)       # re.split behaves as expected
+    final = [word_list[0].capitalize()]
+    for word in word_list[1:]:
+        final.append(word if word in exceptions else word.capitalize())
+    return " ".join(final)
 
 # finds YouTube trailer
 def youtube_search(options):
@@ -95,27 +133,22 @@ if __name__ == "__main__":
     if int(parsed_response["totalResults"]) > 1:
         
         org_list = []
-
-        for t in sr:
-            org_list.append(t["Title"] + ", " + t["Year"])
-            print(t["Title"] + " (" + t["Year"] +")") # prints a list of the search results' title and release year
-
+        
+        print_sr(sr, org_list)
         print("----------------------------------")
         
         correct_search = input("From the list above, what title were you looking for? Please write in the format of Title, Year (i.e. The Avengers, 1998): ")
         
-        correct_title = correct_search.split(", ")
-        correct_name = correct_title[0]
+        articles = ['a', 'an', 'of', 'the', 'is', 'with', 'in']
+        correct_search = title_except(correct_search, articles)
 
         if (correct_search) in org_list:
             i = org_list.index(correct_search) # finds the index of the title the user is looking for in org_list so it can be matched with the one in the parsed_response
             id = sr[i]["imdbID"] 
         else:
-            print("That's not an option from the list above. Please try again.")
+            print("That's not an option from the list above. Please try again and make sure you're writing in the correct format.")
     else:
         id = sr[0]["imdbID"]
-        correct_name = title
-        correct_search = title
 
 
     # make another request to match ids
@@ -165,7 +198,6 @@ if __name__ == "__main__":
         elif youtube.lower() == "no":
             print("Okay, you opted not to watch the trailer.")
             print("----------------------------------")
-            youtube_search(correct_search)
             break
         elif youtube.lower() == "no":
             print("Okay, you opted not to watch the trailer.")
