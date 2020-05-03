@@ -56,7 +56,7 @@ def print_sr(search_results, readable_list):
     """
 
     for title in search_results:
-            readable_list.append(title["Title"] + ", " + title["Year"])
+            readable_list.append(title["Title"] + ", " + title["Year"].replace("–","-"))
             print(title["Title"] + " (" + title["Year"] +")") # prints a list of the search results' title and release year
 
     return None
@@ -162,12 +162,15 @@ if __name__ == "__main__":
     director = parsed_response["Director"]
     cast = parsed_response["Actors"]
     summary = parsed_response["Plot"]
+    rating = parsed_response["Ratings"][0]["Value"]
 
     # rating preference on Rotten Tomatoes, but will resort to IMDb's rating if non-existent
-    if "Rotten Tomatoes" in parsed_response["Ratings"][1]["Source"]:
-        rating = "ROTTEN TOMATOES RATING: " + parsed_response["Ratings"][1]["Value"]
-    else:
-        rating = "IMDb RATING: " + parsed_response["Ratings"][0]["Value"]
+    #if "Rotten Tomatoes" in parsed_response["Ratings"][1]["Source"]:
+    #    print("Using Rotten Tomatoes rating...")
+    #    rating = "ROTTEN TOMATOES RATING: " + parsed_response["Ratings"][1]["Value"]
+    #else:
+    #    print("Using IMDb's rating...")
+    #    rating = "IMDb RATING: " + parsed_response["Ratings"][0]["Value"]
 
     #
     # INFO OUTPUTS
@@ -181,7 +184,7 @@ if __name__ == "__main__":
     print(f"DIRECTOR: {director}")
     print(f"MAIN CAST: {cast}")
     print(f"SUMMARY: {summary}")
-    print(rating)
+    print(f"IMDb RATING: {rating}")
     print("----------------------------------")
 
 
