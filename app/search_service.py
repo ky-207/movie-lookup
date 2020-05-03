@@ -12,9 +12,32 @@ import webbrowser
 
 load_dotenv()
 
+OMDB_API_KEY = os.environ.get("OMDB_API_KEY")
+
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
 YOUTUBE_API_SERVICE_NAME='youtube'
 YOUTUBE_API_VERSION='v3'
+
+def get_response(title):
+    """
+    Issues a request and parses response
+    Param: (movie or tv show) title (str) like "Iron Man" or "Game of Thrones"
+    Example: get_response("Iron Man")
+    Returns: parsed_response # dictionary representing the original JSON response
+    """
+    # how to replace whitespaces (source): https://stackoverflow.com/questions/1007481/how-do-i-replace-whitespaces-with-underscore-and-vice-versa
+    title.replace(" ","+") # transforms the user input so that it is suitable for the request url later
+
+    request_url = f"https://omdbapi.com/?s={title}&apikey={OMDB_API_KEY}"
+    response = requests.get(request_url)
+
+    # validating user's input
+    if "\"Response\":\"False\"" in response.text:
+        print("Oops, couldn't find that movie. Please try again.")
+        exit()
+
+    parsed_response = json.loads(response.text)
+    return parsed_response
 
 # finds YouTube trailer
 def youtube_search(options):
@@ -56,19 +79,7 @@ if __name__ == "__main__":
 
     title = input("Please enter a movie or tv show title (i.e. 'Iron Man' or 'Game of Thrones'): ") # accept user input
 
-    # how to replace whitespaces (source): https://stackoverflow.com/questions/1007481/how-do-i-replace-whitespaces-with-underscore-and-vice-versa
-    title.replace(" ","+") # transforms the user input so that it is suitable for the request url later
-
-    OMDB_API_KEY = os.environ.get("OMDB_API_KEY")
-    request_url = f"https://omdbapi.com/?s={title}&apikey={OMDB_API_KEY}"
-    response = requests.get(request_url)
-
-    # validating user's input
-    if "\"Response\":\"False\"" in response.text:
-        print("Oops, couldn't find that movie. Please try again.")
-        exit()
-
-    parsed_response = json.loads(response.text)
+    parsed_response = get_response(title)
 
     sr = parsed_response["Search"] # search results
 
