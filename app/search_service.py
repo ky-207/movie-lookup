@@ -130,6 +130,9 @@ if __name__ == "__main__":
             articles = ['a', 'an', 'of', 'the', 'is', 'with', 'in']
             correct_search = title_except(correct_search, articles)
 
+            correct_title = correct_search.split(", ")
+            correct_name = correct_title[0]
+
             if (correct_search) in org_list:
                 i = org_list.index(correct_search) # finds the index of the title the user is looking for in org_list so it can be matched with the one in the parsed_response
                 id = sr[i]["imdbID"] 
@@ -173,15 +176,15 @@ if __name__ == "__main__":
 
     # YouTube search    
     while True:
-        youtube = input(f"Would you like to see a trailer for {title_name}? Enter 'Yes' or 'No': ")
-        if youtube.lower() == "yes":
+        youtube = input(f"Would you like to see a trailer for {title_name}? [Y/N] ")
+        if youtube.lower() == "y":
             print("Okay, pulling up trailer now...")
             url = youtube_search(correct_search)
             webbrowser.open(url)
             break
-        elif youtube.lower() == "no":
+        elif youtube.lower() == "n":
             print("Okay, you opted not to watch the trailer.")
             print("----------------------------------")
             break
         else:
-            print("Sorry, that was not a valid choice, please try again and enter 'Yes' or 'No'.")
+            print("Sorry, that was not a valid choice, please try again and enter 'Y' or 'N'.")
