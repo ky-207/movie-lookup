@@ -12,7 +12,6 @@ def combine_features(row):
     Example: df.apply(combine_features, axis=1)
     Returns: the combined string of each row in the dataset stored in the a new specified column
     """
-    print(row.type())
     return row['keywords']+" "+row['cast']+" "+row["genres"]+" "+row["director"]
     
 def get_title_from_index(index):
@@ -33,7 +32,7 @@ def get_index_from_title(title):
     """
     return df[df.title == title]["index"].values[0]
 
-def movie_recommmendations(title):
+def movie_recommendations(title):
     """
     Returns the five movies that are similar to the movie the user has selected.
     Param: title (str) like correct_name
@@ -62,7 +61,7 @@ if __name__ == "__main__":
     for feature in features:
         df[feature] = df[feature].fillna('')
     df["combined_features"] = df.apply(combine_features, axis=1) #applying combine_features() method over each rows of dataframe and storing the combined string in “combined_features” column
-
+    
     cv = CountVectorizer() # creating new CountVectorizer() object
     count_matrix = cv.fit_transform(df["combined_features"]) # feeding combined strings(movie contents) to CountVectorizer() object
     cosine_sim = cosine_similarity(count_matrix)
@@ -70,7 +69,7 @@ if __name__ == "__main__":
     # attempts to find 5 movies similar to the movie the user has selected
     while True:
         try:
-            movie_recommmendations(correct_name)
+            movie_recommendations(correct_name)
             break
         except IndexError:
             print("Sorry, we couldn't find any recommendations for that movie.")
