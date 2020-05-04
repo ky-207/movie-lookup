@@ -82,14 +82,14 @@ class SpreadsheetService():
         while True:
             try:
                 matching_movie_title = matching_movies[0]["Title"]
-                print(f"{matching_movie_title} has been deleted from your watch list.")
                 doc = self.client.open_by_key(self.sheet_id)
                 worksheet = doc.worksheet(self.sheet_name)
                 cell = worksheet.find(matching_movie_title)
                 row = cell.row
                 worksheet.delete_rows(row)
+                print(f"{matching_movie_title} has been deleted from your watch list.")
                 break
-            except IndexError:
+            except (IndexError, gspread.exceptions.CellNotFound):
                 print("The movie associated with this id does not exist in this list. Sorry!")
                 break
 
@@ -100,6 +100,32 @@ class SpreadsheetService():
         worksheet.resize(rows=1)
         worksheet.resize(rows=30)
         return "CLEARING LIST..."
+
+def user_options(option):
+    while True:
+        if option == "1":
+            print("----------------------------------")
+            movie_id = input("Which movie would you like to get? Please enter its id (e.g. 2): ")
+            print("GETTING MOVIE:", movie_id)
+            print(ss.get_movie(movie_id))
+            break
+        elif option == "2":
+            print("----------------------------------")
+            movie_id = input("Which movie would you like to delete? Please enter its id (e.g. 2): ")
+            print("DELETING MOVIE:", movie_id)
+            ss.destroy_movie(movie_id)
+            break
+        elif option == "3":
+            print("----------------------------------")
+            ss.clear_list()
+            print("The to watch list has been cleared.")
+            break
+        elif option == "4":
+            print("Thank you for using the spreadsheet service!")
+            exit()
+        else:
+            print("Please input 1, 2, 3, or 4.")
+            break
 
 if __name__ == "__main__":
 
@@ -115,43 +141,21 @@ if __name__ == "__main__":
     print("----------------------------------")
     print("CREATING A MOVIE...")
     movie_attributes = parsed_response
+    #movie_attributes = {
+    #    "Title": "Iron Man",
+    #    "Year": "2008",
+    #    "Genre": "Action",
+    #    "Director": "No idea",
+    #    "Actors": "RDJ",
+    #    "Plot": "billionaire playboy"
+    #}
+    print("ADDED NEW MOVIE: " + movie_attributes["Title"])
 
     response = ss.create_movie(movie_attributes)
     print("----------------------------------")
     print(f"... UPDATED RANGE {response['updatedRange']} ({response['updatedCells']} CELLS)")
     
-    print("----------------------------------")
     while True:
-        x = input("Would you like to get a movie? [Y/N] ")
-        if x.lower() == "y":
-            movie_id = input("Which movie would you like to get? Please enter its id (e.g. 2): ")
-            print("GETTING MOVIE:", movie_id)
-            print(ss.get_movie(movie_id))
-        elif x.lower() == "n":
-            break
-        else:
-            print("Please input either Y or N.")
-
-    print("----------------------------------")
-    while True:
-        x = input("Would you like to delete a movie? [Y/N] ")
-        if x.lower() == "y":
-            movie_id = input("Which movie would you like to delete? Please enter its id (e.g. 2): ")
-            print("DELETING MOVIE:", movie_id)
-            ss.destroy_movie(movie_id)
-        elif x.lower() == "n":
-            break
-        else:
-            print("Please input either Y or N.")
-
-    print("----------------------------------")
-    while True:
-        x = input("Would you like to clear the list? [Y/N] ")
-        if x.lower() == "y":
-            ss.clear_list()
-            break
-        elif x.lower() == "n":
-            break
-        else:
-            print("Please input either Y or N.")
-
+        print("----------------------------------")
+        option = input("Would you like to: 1. Get a movie; 2. Delete a movie; 3. Clear list; 4. Exit? Please enter 1, 2, 3, or 4: ")
+        user_options(option)
