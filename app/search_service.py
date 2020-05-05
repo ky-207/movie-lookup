@@ -165,7 +165,6 @@ if __name__ == "__main__":
     print("----------------------------------")
     print(f"TITLE: {title_name} ({release_year})")
     print("----------------------------------")
-
     print(f"GENRE: {genre}")
     print(f"DIRECTOR: {director}")
     print(f"MAIN CAST: {cast}")
