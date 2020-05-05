@@ -40,7 +40,7 @@ class SpreadsheetService():
         Example: self.getmovies()
         Returns: the selected sheet and the data in it
         """
-        print("GETTING MOVIES FROM THE SPREADSHEET...")
+        #print("GETTING MOVIES FROM THE SPREADSHEET...")
         doc = self.client.open_by_key(self.sheet_id)
         self.sheet = doc.worksheet(self.sheet_name)
         self.movies = self.sheet.get_all_records()
@@ -99,7 +99,6 @@ class SpreadsheetService():
         Deletes all the information pertaining to a specified movie in the spreadsheet if available.
         Param: movie_id (int)
         Example: ss.destroy_movie(movie_id)
-        Returns: None
         """
         if not (self.sheet and self.movies): self.get_movies()
         matching_movies = [m for m in self.movies if str(m["ID"]) == str(movie_id)]
@@ -133,7 +132,6 @@ def user_options(option):
     """
     Param: option (str) like "1"
     Example: user_options("1")
-    Returns: None
     """
     while True:
         if option == "1":
@@ -150,14 +148,14 @@ def user_options(option):
             break
         elif option == "3":
             print("----------------------------------")
-            ss.clear_list()
-            print("The to watch list has been cleared.")
+            ss.clear_list()#
+            print("The to-watch list has been cleared.")
             break
         elif option == "4":
             print("Thank you for using the spreadsheet service!")
             exit()
         else:
-            print("Please input 1, 2, 3, or 4.")
+            print("Sorry, that wasn't an option. Please input 1, 2, 3, or 4.")
             break
 
 if __name__ == "__main__":
@@ -171,24 +169,27 @@ if __name__ == "__main__":
     for movie in movies:
         print(" + " + str(movie["ID"]) + ": " + movie["Title"])
 
-    print("----------------------------------")
-    print("CREATING A MOVIE...")
     movie_attributes = parsed_response
     #movie_attributes = {
     #    "Title": "Iron Man",
     #    "Year": "2008",
     #    "Genre": "Action",
-    #    "Director": "No idea",
+    #    "Director": "Jon Favreau",
     #    "Actors": "RDJ",
     #    "Plot": "billionaire playboy"
     #}
+    
+    response = ss.create_movie(movie_attributes)
+    print("----------------------------------")
+    print("CREATING A MOVIE...")
     print("ADDED NEW MOVIE: " + movie_attributes["Title"])
 
-    response = ss.create_movie(movie_attributes)
     print("----------------------------------")
     print(f"... UPDATED RANGE {response['updatedRange']} ({response['updatedCells']} CELLS)")
     
     while True:
         print("----------------------------------")
+        sheet, movies = ss.get_movies()
+
         option = input("Would you like to: 1. Get a movie; 2. Delete a movie; 3. Clear list; 4. Exit? Please enter 1, 2, 3, or 4: ")
         user_options(option)
