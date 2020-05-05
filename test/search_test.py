@@ -3,7 +3,7 @@
 import pytest
 import os
 
-from app.search_service import get_response, print_sr, title_except, youtube_search
+from app.search_service import get_response, get_response_2, print_sr, title_except, youtube_search
 
 CI_ENV = os.environ.get("CI") == "true" # expect default environment variable setting of "CI=true" on Travis CI, see: https://docs.travis-ci.com/user/environment-variables/#default-environment-variables
 
@@ -17,6 +17,21 @@ def test_get_response():
     assert "Search" in parsed_response.keys()
     assert "totalResults" in parsed_response.keys()
     assert "Response" in parsed_response.keys()
+    assert parsed_response["Response"] == "True"
+
+def test_get_response_2():
+    id = "tt0371746"
+
+    parsed_response = get_response_2(id)
+
+    assert isinstance(parsed_response, dict)
+    assert "Title" in parsed_response.keys()
+    assert "Year" in parsed_response.keys()
+    assert "Genre" in parsed_response.keys()
+    assert "Director" in parsed_response.keys()
+    assert "Actors" in parsed_response.keys()
+    assert "Plot" in parsed_response.keys()
+    assert "Ratings" in parsed_response.keys()
     assert parsed_response["Response"] == "True"
 
 def test_print_sr():

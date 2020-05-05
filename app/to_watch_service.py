@@ -22,10 +22,11 @@ AUTH_SCOPE = [
  
 class SpreadsheetService():
     def __init__(self):
-    """
-    Initializes and sets up the spreadsheet service.
-    """
+        """
+        Initializes and sets up the spreadsheet service.
+        """
         print("INITIALIZING NEW SPREADSHEET SERVICE...")
+        
         self.credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILEPATH, AUTH_SCOPE)
         self.client = gspread.authorize(self.credentials)
         self.sheet_id = DOCUMENT_KEY
@@ -34,24 +35,24 @@ class SpreadsheetService():
         self.movies = None
 
     def get_movies(self):
-    """
-    Opens the selected spreadsheet and retrieves all the data from the spreadsheet.
-    Example: self.getmovies()
-    Returns: the selected sheet and the data in it
-    """
-        print("GETTING MOVIES FROM THE SPREADSHEET...")
+        """
+        Opens the selected spreadsheet and retrieves all the data from the spreadsheet.
+        Example: self.getmovies()
+        Returns: the selected sheet and the data in it
+        """
+        #print("GETTING MOVIES FROM THE SPREADSHEET...")
         doc = self.client.open_by_key(self.sheet_id)
         self.sheet = doc.worksheet(self.sheet_name)
         self.movies = self.sheet.get_all_records()
         return self.sheet, self.movies
 
     def create_movie(self, movie_attributes): 
-    """
-    Creates a new movie in the spreadsheet with the specified attributes.
-    Param: movie_attributes (dict) like parsed_response
-    Example: ss.create_movie(parsed_response)
-    Returns: the new row
-    """
+        """
+        Creates a new movie in the spreadsheet with the specified attributes.
+        Param: movie_attributes (dict) like parsed_response
+        Example: ss.create_movie(parsed_response)
+        Returns: the new row
+        """
         self.get_movies()
         if len(self.movies) == 1:
             print(f"DETECTED {len(self.movies)} EXISTING MOVIE")
@@ -94,12 +95,11 @@ class SpreadsheetService():
                 break
 
     def destroy_movie(self, movie_id):
-    """
-    Deletes all the information pertaining to a specified movie in the spreadsheet if available.
-    Param: movie_id (int)
-    Example: ss.destroy_movie(movie_id)
-    Returns: None
-    """
+        """
+        Deletes all the information pertaining to a specified movie in the spreadsheet if available.
+        Param: movie_id (int)
+        Example: ss.destroy_movie(movie_id)
+        """
         if not (self.sheet and self.movies): self.get_movies()
         matching_movies = [m for m in self.movies if str(m["ID"]) == str(movie_id)]
         while True:
@@ -117,9 +117,9 @@ class SpreadsheetService():
                 break
 
     def clear_list(self):
-    """
-    Clears the entire list except the headers.
-    """
+        """
+        Clears the entire list except the headers.
+        """
         if not (self.sheet and self.movies): self.get_movies()
         doc = self.client.open_by_key(self.sheet_id)
         worksheet = doc.worksheet(self.sheet_name)
@@ -129,11 +129,10 @@ class SpreadsheetService():
 
 # provides an option menu for the user to either retrieve a movie, delete a movie, clear the list, or exit the program
 def user_options(option):
-"""
-Param: option (str) like "1"
-Example: user_options("1")
-Returns: None
-"""
+    """
+    Param: option (str) like "1"
+    Example: user_options("1")
+    """
     while True:
         if option == "1":
             print("----------------------------------")
@@ -149,14 +148,14 @@ Returns: None
             break
         elif option == "3":
             print("----------------------------------")
-            ss.clear_list()
-            print("The to watch list has been cleared.")
+            ss.clear_list()#
+            print("The to-watch list has been cleared.")
             break
         elif option == "4":
             print("Thank you for using the spreadsheet service!")
             exit()
         else:
-            print("Please input 1, 2, 3, or 4.")
+            print("Sorry, that wasn't an option. Please input 1, 2, 3, or 4.")
             break
 
 if __name__ == "__main__":
@@ -170,24 +169,27 @@ if __name__ == "__main__":
     for movie in movies:
         print(" + " + str(movie["ID"]) + ": " + movie["Title"])
 
-    print("----------------------------------")
-    print("CREATING A MOVIE...")
     movie_attributes = parsed_response
     #movie_attributes = {
     #    "Title": "Iron Man",
     #    "Year": "2008",
     #    "Genre": "Action",
-    #    "Director": "No idea",
+    #    "Director": "Jon Favreau",
     #    "Actors": "RDJ",
     #    "Plot": "billionaire playboy"
     #}
+    
+    response = ss.create_movie(movie_attributes)
+    print("----------------------------------")
+    print("CREATING A MOVIE...")
     print("ADDED NEW MOVIE: " + movie_attributes["Title"])
 
-    response = ss.create_movie(movie_attributes)
     print("----------------------------------")
     print(f"... UPDATED RANGE {response['updatedRange']} ({response['updatedCells']} CELLS)")
     
     while True:
         print("----------------------------------")
+        sheet, movies = ss.get_movies()
+
         option = input("Would you like to: 1. Get a movie; 2. Delete a movie; 3. Clear list; 4. Exit? Please enter 1, 2, 3, or 4: ")
         user_options(option)
