@@ -40,6 +40,9 @@ def movie_recommendations(df, title):
     Returns: five recommended movies
     """
     movie_index = get_index_from_title(df, title)
+    cv = CountVectorizer() # creating new CountVectorizer() object
+    count_matrix = cv.fit_transform(df["combined_features"]) # feeding combined strings(movie contents) to CountVectorizer() object
+    cosine_sim = cosine_similarity(count_matrix)
     similar_movies = list(enumerate(cosine_sim[movie_index])) #accessing the row corresponding to given movie to find all the similarity scores for that movie and then enumerating over it
     sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
     i=0
@@ -61,10 +64,6 @@ if __name__ == "__main__":
     for feature in features:
         df[feature] = df[feature].fillna('')
     df["combined_features"] = df.apply(combine_features, axis=1) #applying combine_features() method over each rows of dataframe and storing the combined string in “combined_features” column
-    
-    cv = CountVectorizer() # creating new CountVectorizer() object
-    count_matrix = cv.fit_transform(df["combined_features"]) # feeding combined strings(movie contents) to CountVectorizer() object
-    cosine_sim = cosine_similarity(count_matrix)
 
     # attempts to find 5 movies similar to the movie the user has selected
     while True:

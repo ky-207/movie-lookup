@@ -1,14 +1,23 @@
 # app/movie_lookup.py
 
 import os
-from dotenv import load_dotenv
+import json
+import re
+import webbrowser
+import requests
+import pandas as pd
 
-from app import APP_ENV
-from app.search_service import get_response, print_sr, title_except, youtube_search
-#from app.recommendations import combine_features, get_title_from_index, get_index_from_title, movie_recommendations
-#from app.to_watch_service import SpreadsheetService, user_options
+from dotenv import load_dotenv
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+from search_service import get_response, print_sr, title_except, youtube_search
+from recommendations import combine_features, get_title_from_index, get_index_from_title, movie_recommendations
+from to_watch_service import SpreadsheetService, user_options
 
 load_dotenv()
+
+OMDB_API_KEY = os.environ.get("OMDB_API_KEY")
 
 if __name__ == "__main__":
 
@@ -72,3 +81,36 @@ if __name__ == "__main__":
             break
         else:
             print("Sorry, that was not a valid choice, please try again and enter 'Y' or 'N'.")
+
+    df = pd.read_csv("dataset.csv")
+    features = ['keywords', 'cast', 'genres', 'director']
+    for feature in features:
+        df[feature] = df[feature].fillna('')
+    df["combined_features"] = df.apply(combine_features, axis=1)
+    while True:
+        try:
+            movie_recommendations(df, correct_name)
+            break
+        except IndexError:
+            print("Sorry, we couldn't find any recommendations for that movie.")
+            print("----------------------------------")
+            break
+
+    ss = SpreadsheetService()
+    sheet, movies = ss.get_movies()
+    print("----------------------------------")
+    print(f"LISTING MOVIES FROM THE '{sheet.title}' SHEET")
+    for movie in movies:
+        print(" + " + str(movie["ID"]) + ": " + movie["Title"])
+    movie_attributes = parsed_response
+    response = ss.create_movie(movie_attributes)
+    print("----------------------------------")
+    print("CREATING A MOVIE...")
+    print("ADDED NEW MOVIE: " + movie_attributes["Title"])
+    print("----------------------------------")
+    print(f"... UPDATED RANGE {response['updatedRange']} ({response['updatedCells']} CELLS)")
+    while True:
+        print("----------------------------------")
+        sheet, movies = ss.get_movies()
+        option = input("Would you like to: 1. Get a movie; 2. Delete a movie; 3. Clear list; 4. Exit? Please enter 1, 2, 3, or 4: ")
+        user_options(option)

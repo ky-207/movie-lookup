@@ -40,25 +40,6 @@ def get_response(title):
     parsed_response = json.loads(response.text)
     return parsed_response
 
-def get_response_2(id):
-    """
-    Issues a request and parses response
-    Param: (valid IMDb) id (str) like "tt0371746"
-    Example: get_response("tt0371746")
-    Returns: parsed_response # dictionary representing the original JSON response
-    """
-
-    request_url = f"https://omdbapi.com/?i={id}&apikey={OMDB_API_KEY}"
-    response = requests.get(request_url)
-
-    # validating id
-    if "\"Response\":\"False\"" in response.text:
-        print("Oops, couldn't find that movie. Please try again.")
-        exit()
-
-    parsed_response = json.loads(response.text)
-    return parsed_response
-
 # title lookup results from search
 def print_sr(search_results, readable_list):
     """
@@ -165,7 +146,9 @@ if __name__ == "__main__":
 
 
     # make another request to match ids
-    parsed_response = get_response_2(id)
+    request_url = f"https://omdbapi.com/?i={id}&apikey={OMDB_API_KEY}"
+    response = requests.get(request_url)
+    parsed_response = json.loads(response.text)
 
     title_name = parsed_response["Title"]
     release_year = parsed_response["Year"]
@@ -182,6 +165,7 @@ if __name__ == "__main__":
     print("----------------------------------")
     print(f"TITLE: {title_name} ({release_year})")
     print("----------------------------------")
+
     print(f"GENRE: {genre}")
     print(f"DIRECTOR: {director}")
     print(f"MAIN CAST: {cast}")
