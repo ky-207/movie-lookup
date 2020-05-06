@@ -1,0 +1,18 @@
+{% extends "bootstrap_layout.html" %}
+
+{% block content %}
+
+    <h2>INFORMATION for {{ title_year }}</h2>
+
+    <ul>
+        <li>Title: {{ title_name }} ({{ release_year }})</li>
+        <li>Genre: {{ genre }}</li>
+        <li>Director: {{ director }}</li>
+        <li>Cast: {{ cast }}</li>
+        <li>Summary: {{ summary }}</li>
+        <li>Rating: {{ rating }}</li>
+    </ul>
+
+    <iframe src="https://www.youtube.com/embed/{{ youtube_id }}" allowfullscreen="" width="25%" frameborder="0"></iframe>
+
+{% endblock %}

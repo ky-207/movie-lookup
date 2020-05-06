@@ -1,0 +1,28 @@
+{% extends "bootstrap_layout.html" %}
+
+{% block content %}
+
+    <h2>SEARCH RESULTS for {{ title }}</h2>
+
+    <p>Title: {{ title }}</p>
+
+    <!-- TODO: consider using a table instead of a list -->
+    <!-- https://www.w3schools.com/html/html_tables.asp -->
+    <!-- https://getbootstrap.com/docs/4.0/content/tables/ -->
+    <ul>
+    {% for title in org_list %}
+        <li>{{ title }}</li>
+    {% endfor %}
+    </ul>
+
+    <p>From the results above, which title were you looking for? Please write in the format of Title, Year (i.e. Iron Man, 2008):</p>
+    <form action="/movie/info" method="POST">
+
+        <label>Title, Year:</label>
+        <input type="text" name="title_year" placeholder="Iron Man, 2008">
+        <br>
+
+        <button>Submit</button>
+    </form>
+
+{% endblock %}
