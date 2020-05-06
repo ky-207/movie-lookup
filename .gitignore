@@ -1,4 +1,7 @@
+# ignore google secret credentials
 spreadsheet_credentials.json
+
+# ignore secret environemnt variable values
 .env
 .venv
 env/
@@ -6,3 +9,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# ignore files created by pytest
+__pycache__
+.pytest_cache
