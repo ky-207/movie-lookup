@@ -128,7 +128,7 @@ class SpreadsheetService():
         return "CLEARING LIST..."
 
 # provides an option menu for the user to either retrieve a movie, delete a movie, clear the list, or exit the program
-def user_options(option):
+def user_options(option, ss):
     """
     Param: option (str) like "1"
     Example: user_options("1")
@@ -192,4 +192,4 @@ if __name__ == "__main__":
         sheet, movies = ss.get_movies()
 
         option = input("Would you like to: 1. Get a movie; 2. Delete a movie; 3. Clear list; 4. Exit? Please enter 1, 2, 3, or 4: ")
-        user_options(option)
+        user_options(option,ss)
