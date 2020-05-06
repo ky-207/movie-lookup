@@ -1,9 +1,10 @@
 # web_app/routes/movie_routes.py
 
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, current_app, jsonify, flash, redirect
 
 from app.search_service import get_response, get_response_2, print_sr, title_except, youtube_search
 
+from app.to_watch_service import SpreadsheetService
 
 movie_routes = Blueprint("movie_routes", __name__)
 
@@ -78,5 +79,53 @@ def display_info():
 
     youtube_id = url.replace("https://www.youtube.com/watch?v=","")
 
+    session["parsed_response"] = parsed_response
+
     return render_template("movie_info.html", title_year=title_year, title_name=title_name, 
     release_year=release_year, genre=genre, director=director, cast=cast, summary=summary, rating=rating, youtube_id=youtube_id)
+
+
+@movie_routes.route('/movie/to-watch')
+def index():
+
+    print("VISITING THE TO-WATCH PAGE")
+    ss = SpreadsheetService()
+    sheet, movies = ss.get_movies()
+
+    print(f"LISTING TITLES FROM THE '{sheet.title}' SHEET")
+    for movie in movies:
+        print(" + " + str(movie["ID"]) + ": " + movie["Title"])
+
+    return render_template("to_watch.html", movies=movies, sheet_name=sheet.title, sheet_id= ss.sheet_id)
+
+
+@movie_routes.route('/movie/to-watch/added', methods=["GET", "POST"])
+def add():
+
+    if request.method == "GET":
+        ButtonPressed=0
+        ButtonPressed += 1
+        return render_template("to_watch.html", ButtonPressed = ButtonPressed)
+    
+    print("VISITING THE TO-WATCH PAGE")
+    ss = SpreadsheetService()
+    sheet, movies = ss.get_movies()
+
+    parsed_response = session.get("parsed_response", None)
+    movie_attributes = parsed_response
+    response = ss.create_movie(movie_attributes)
+
+    print("RECEIVED MOVIE ATTRIBUTES")
+
+    print(f"... UPDATED RANGE {response['updatedRange']} ({response['updatedCells']} CELLS)")
+
+    sheet, movies = ss.get_movies()
+
+    print(f"LISTING TITLES FROM THE '{sheet.title}' SHEET")
+    for movie in movies:
+        print(" + " + str(movie["ID"]) + ": " + movie["Title"])
+        
+    flash(f"Title '{movie['Title']}' created successfully!", "warning")
+
+    
+    return render_template("to_watch.html", movies=movies, sheet_name=sheet.title, sheet_id= ss.sheet_id)
