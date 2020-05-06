@@ -10,4 +10,6 @@ gspread
 oauth2client
 pytest
 Flask
+
+# heroku needs this in order to run our app on the server:
 gunicorn
