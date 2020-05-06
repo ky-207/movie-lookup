@@ -1,5 +1,7 @@
 # web_app/routes/movie_routes.py
 import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from flask import Blueprint, render_template, request, session, current_app, jsonify, flash, redirect
 
@@ -91,19 +93,24 @@ def display_info():
     df["combined_features"] = df.apply(combine_features, axis=1)
     while True:
         try:
-            sorted_similar_movies = movie_recommendations(df, correct_name)
+            movie_index = get_index_from_title(df, correct_name)
+            cv = CountVectorizer() # creating new CountVectorizer() object
+            count_matrix = cv.fit_transform(df["combined_features"]) # feeding combined strings(movie contents) to CountVectorizer() object
+            cosine_sim = cosine_similarity(count_matrix)
+            similar_movies = list(enumerate(cosine_sim[movie_index])) #accessing the row corresponding to given movie to find all the similarity scores for that movie and then enumerating over it
+            sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
+            #sorted_similar_movies = movie_recommendations(df, correct_name)
+            i=0
+            get_title = []
+            for element in sorted_similar_movies:
+                get_title.append(get_title_from_index(df, element[0]))
+                i=i+1
+                if i>4:
+                    print("----------------------------------")
+                    break
             break
         except IndexError:
             print("Sorry, we couldn't find any recommendations for that title.")
-            print("----------------------------------")
-            break
-    
-    for element in sorted_similar_movies:
-        get_title = []
-        get_title.append(get_title_from_index(df, element[0]))
-        print(get_title)
-        i=i+1
-        if i>4:
             print("----------------------------------")
             break
     print(get_title)
