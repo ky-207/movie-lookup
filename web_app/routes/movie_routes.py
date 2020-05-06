@@ -94,12 +94,11 @@ def display_info():
     while True:
         try:
             movie_index = get_index_from_title(df, correct_name)
-            cv = CountVectorizer() # creating new CountVectorizer() object
-            count_matrix = cv.fit_transform(df["combined_features"]) # feeding combined strings(movie contents) to CountVectorizer() object
+            cv = CountVectorizer() 
+            count_matrix = cv.fit_transform(df["combined_features"])
             cosine_sim = cosine_similarity(count_matrix)
-            similar_movies = list(enumerate(cosine_sim[movie_index])) #accessing the row corresponding to given movie to find all the similarity scores for that movie and then enumerating over it
+            similar_movies = list(enumerate(cosine_sim[movie_index]))
             sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
-            #sorted_similar_movies = movie_recommendations(df, correct_name)
             i=0
             get_title = []
             for element in sorted_similar_movies:
@@ -158,6 +157,70 @@ def add():
         print(" + " + str(movie["ID"]) + ": " + movie["Title"])
         
     flash(f"Title '{movie['Title']}' created successfully!", "warning")
-
     
     return render_template("to_watch.html", movies=movies, sheet_name=sheet.title, sheet_id= ss.sheet_id)
+
+
+@movie_routes.route('/movie/to-watch/deleted', methods=["GET", "POST"])
+def delete():
+
+    # code so that it leads to this page if delete option is selected?
+    if request.method == "GET":
+        ButtonPressed=0
+        ButtonPressed += 1
+        return render_template("to_watch.html", ButtonPressed = ButtonPressed)
+
+    print("VISITING THE TO-WATCH PAGE")
+    ss = SpreadsheetService()
+    sheet, movies = ss.get_movies()
+
+    # need to ask for user to enter movie_id they wish to delete on html page, idk how to do this
+    matching_movies = [m for m in self.movies if str(m["ID"]) == str(movie_id)]
+    while True:
+        try:
+            matching_movie_title = matching_movies[0]["Title"]
+            doc = self.client.open_by_key(self.sheet_id)
+            worksheet = doc.worksheet(self.sheet_name)
+            cell = worksheet.find(matching_movie_title)
+            row = cell.row
+            worksheet.delete_rows(row)
+            print(f"{matching_movie_title} has been deleted from your watch list.")
+            break
+        except (IndexError, gspread.exceptions.CellNotFound):
+            print("The movie associated with this id does not exist in this list. Sorry!") # also need to return an error page...?
+            break
+
+    sheet, movies = ss.get_movies()
+
+    print(f"LISTING TITLES FROM THE '{sheet.title}' SHEET")
+    for movie in movies:
+        print(" + " + str(movie["ID"]) + ": " + movie["Title"])
+
+    flash(f"Title '{movie['Title']}' deleted successfully!", "warning")
+    
+    return render_template("to_watch.html", movies=movies, sheet_name=sheet.title, sheet_id= ss.sheet_id)
+
+@movie_routes.route('/movie/to-watch/listcleared', methods=["GET", "POST"])
+def clear():
+
+    # code so that it leads to this page if clear list option is selected?
+    if request.method == "GET":
+        ButtonPressed=0
+        ButtonPressed += 1
+        return render_template("to_watch.html", ButtonPressed = ButtonPressed)
+
+    ss = SpreadsheetService()
+    sheet, movies = ss.get_movies()
+
+    doc = self.client.open_by_key(self.sheet_id)
+    worksheet = doc.worksheet(self.sheet_name)
+    worksheet.resize(rows=1)
+    worksheet.resize(rows=30)
+
+    sheet, movies = ss.get_movies()
+
+    print("CLEARING LIST...")
+
+    flash("The to-watch list has been cleared!", "warning")
+
+    return render_template("to_watch.html", movies=movies, sheet_name=sheet.title, sheet_id=ss.sheet_id)

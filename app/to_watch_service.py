@@ -170,14 +170,6 @@ if __name__ == "__main__":
         print(" + " + str(movie["ID"]) + ": " + movie["Title"])
 
     movie_attributes = parsed_response
-    #movie_attributes = {
-    #    "Title": "Iron Man",
-    #    "Year": "2008",
-    #    "Genre": "Action",
-    #    "Director": "Jon Favreau",
-    #    "Actors": "RDJ",
-    #    "Plot": "billionaire playboy"
-    #}
     
     response = ss.create_movie(movie_attributes)
     print("----------------------------------")
