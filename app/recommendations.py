@@ -54,6 +54,8 @@ def movie_recommendations(df, title):
             print("----------------------------------")
             break
 
+    return sorted_similar_movies
+
 if __name__ == "__main__":
 
     # reads the dataset.csv into a dataframe

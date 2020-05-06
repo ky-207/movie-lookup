@@ -13,11 +13,18 @@
         <li>Rating: {{ rating }}</li>
     </ul>
 
+    <p>Similar movies, if any:</p>
+    <ul>
+        {% for element in get_title %}
+            <li>{{ [element] }}</li>
+        {% endfor %}
+    </ul>
+
     <iframe src="https://www.youtube.com/embed/{{ youtube_id }}" allowfullscreen="" width="25%" frameborder="0"></iframe>
 
     <form action="/movie/to-watch/added" method="POST">
 
-        <label>Would you like to add {{ title_name }} to your To-Watch List?:</label>
+        <label>Would you like to add {{ title_name }} to your To-Watch List? </label>
         <input type="submit" value="Add">
     </form>
 {% endblock %}

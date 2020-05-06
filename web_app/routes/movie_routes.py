@@ -1,8 +1,11 @@
 # web_app/routes/movie_routes.py
+import pandas as pd
 
 from flask import Blueprint, render_template, request, session, current_app, jsonify, flash, redirect
 
 from app.search_service import get_response, get_response_2, print_sr, title_except, youtube_search
+
+from app.recommendations import combine_features, get_title_from_index, get_index_from_title, movie_recommendations
 
 from app.to_watch_service import SpreadsheetService
 
@@ -67,6 +70,8 @@ def display_info():
     # make another request to match ids
     parsed_response = get_response_2(id)
 
+    session["parsed_response"] = parsed_response
+
     title_name = parsed_response["Title"]
     release_year = parsed_response["Year"]
     genre = parsed_response["Genre"]
@@ -79,10 +84,30 @@ def display_info():
 
     youtube_id = url.replace("https://www.youtube.com/watch?v=","")
 
-    session["parsed_response"] = parsed_response
-
-    return render_template("movie_info.html", title_year=title_year, title_name=title_name, 
-    release_year=release_year, genre=genre, director=director, cast=cast, summary=summary, rating=rating, youtube_id=youtube_id)
+    df = pd.read_csv("dataset.csv")
+    features = ['keywords', 'cast', 'genres', 'director']
+    for feature in features:
+        df[feature] = df[feature].fillna('')
+    df["combined_features"] = df.apply(combine_features, axis=1)
+    while True:
+        try:
+            sorted_similar_movies = movie_recommendations(df, correct_name)
+            break
+        except IndexError:
+            print("Sorry, we couldn't find any recommendations for that title.")
+            print("----------------------------------")
+            break
+    
+    for element in sorted_similar_movies:
+        get_title = []
+        get_title.append(get_title_from_index(df, element[0]))
+        print(get_title)
+        i=i+1
+        if i>4:
+            print("----------------------------------")
+            break
+    print(get_title)
+    return render_template("movie_info.html", title_year=title_year, title_name=title_name, release_year=release_year, genre=genre, director=director, cast=cast, summary=summary, rating=rating, youtube_id=youtube_id, get_title=get_title)
 
 
 @movie_routes.route('/movie/to-watch')
