@@ -146,9 +146,9 @@ heroku config # at this time, results might be empty-ish
 
 # set environment variables:
 heroku config:set APP_ENV="production" 
-heroku config:set OMDB_API_KEY="142571fd"
-heroku config:set YOUTUBE_API_KEY="AIzaSyAfHm3zCacK6HykMxuL8_Fs25At9oMMnT4"
-heroku config:set GOOGLE_SHEET_ID="1tKt_LQucVs2jRrXAVyprh2waB19SsMr-6-MZ3blnOk4"
+heroku config:set OMDB_API_KEY="abc123"
+heroku config:set YOUTUBE_API_KEY="abc123"
+heroku config:set GOOGLE_SHEET_ID="abc123"
 heroku config:set GOOGLE_SHEET_NAME="To Watch List"
 ```
 
