@@ -1,0 +1,19 @@
+{% extends "bootstrap_layout.html" %}
+{% set active_page = "movie_search" %}
+
+{% block content %}
+
+    <h2>MOVIE OR TV SHOW SEARCH PAGE</h2>
+
+    <p>Find information about a movie or tv show by entering a title...</p>
+
+    <form action="/movie/search-results" method="POST">
+
+        <label>Title:</label>
+        <input type="text" name="title" placeholder="Iron Man">
+        <br>
+
+        <button>Submit</button>
+    </form>
+
+{% endblock %}

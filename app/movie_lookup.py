@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from search_service import get_response, get_response_2, print_sr, title_except, youtube_search
-from recommendations import combine_features, get_title_from_index, get_index_from_title, movie_recommendations
-from to_watch_service import SpreadsheetService, user_options
+from app.search_service import get_response, get_response_2, print_sr, title_except, youtube_search
+from app.recommendations import combine_features, get_title_from_index, get_index_from_title, movie_recommendations
+from app.to_watch_service import SpreadsheetService, user_options
 
 load_dotenv()
 

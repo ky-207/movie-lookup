@@ -1,0 +1,33 @@
+{% extends "bootstrap_layout.html" %}
+
+{% block content %}
+
+    <h2>INFORMATION for {{ title_year }}</h2>
+
+    <p><img src="{{ poster }}" width=150></p>
+
+    <ul>
+        <li>Title: {{ title_name }} ({{ release_year }})</li>
+        <li>Genre: {{ genre }}</li>
+        <li>Director: {{ director }}</li>
+        <li>Cast: {{ cast }}</li>
+        <li>Summary: {{ summary }}</li>
+        <li>Rating: {{ rating }}</li>
+    </ul>
+
+    <h4>Similar movies, if any:</h4>
+    <ul>
+        {% for element in get_title %}
+            <li>{{ [element] }}</li>
+        {% endfor %}
+    </ul>
+
+    <h4>YouTube Trailer</h4>
+    <iframe src="https://www.youtube.com/embed/{{ youtube_id }}" allowfullscreen="" width="25%" frameborder="0"></iframe>
+
+    <form action="/movie/to-watch/added" method="POST">
+
+        <label>Would you like to add {{ title_name }} to your To-Watch List? </label>
+        <input type="submit" value="Add">
+    </form>
+{% endblock %}
