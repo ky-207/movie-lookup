@@ -14,7 +14,7 @@ load_dotenv()
 DOCUMENT_KEY = os.environ.get("GOOGLE_SHEET_ID", "OOPS: Please get the spreadsheet identifier from its URL.")
 SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME", default="To Watch List")
  
-CREDENTIALS_FILEPATH = os.path.join(os.path.dirname(__file__), "..", "spreadsheet_credentials.json")
+CREDENTIALS_FILEPATH = os.path.join(os.path.dirname(__file__), "app", "..", "spreadsheet_credentials.json")
 AUTH_SCOPE = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive"

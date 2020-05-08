@@ -38,7 +38,7 @@ From the [API Credentials Page](https://console.developers.google.com/apis/crede
 * Accessing: "Application Data"
 * Using Engines: "No"
 
-The suggested credentials will be for a service account. Follow the prompt to create a new service account with a role of: "Project" > "Editor", and create credentials for that service account. Download the resulting .json file and store it in this repo as "spreadsheet_credentials.json".
+The suggested credentials will be for a service account. Follow the prompt to create a new service account with a role of: "Project" > "Editor", and create credentials for that service account. Download the resulting .json file and store it in this repo's app folder as "spreadsheet_credentials.json".
 
 Make sure to store the credentials in an environment variable.
 
