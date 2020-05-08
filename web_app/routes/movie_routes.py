@@ -82,6 +82,7 @@ def display_info():
     cast = parsed_response["Actors"]
     summary = parsed_response["Plot"]
     rating = parsed_response["Ratings"][0]["Value"]
+    poster = parsed_response["Poster"]
 
     url = youtube_search(title_name)
 
@@ -103,7 +104,7 @@ def display_info():
 
             get_title = []
             break
-    return render_template("movie_info.html", title_year=title_year, title_name=title_name, release_year=release_year, genre=genre, director=director, cast=cast, summary=summary, rating=rating, youtube_id=youtube_id, get_title=get_title)
+    return render_template("movie_info.html", title_year=title_year, title_name=title_name, release_year=release_year, genre=genre, director=director, cast=cast, summary=summary, rating=rating, poster=poster, youtube_id=youtube_id, get_title=get_title)
 
 
 @movie_routes.route('/movie/to-watch')

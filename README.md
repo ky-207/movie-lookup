@@ -76,7 +76,7 @@ pip install -r requirements.txt
 ## Usage
 Run the program:
 ```sh
-python app/movie_lookup.py
+python -m app.movie_lookup
 ```
 
 ## Web App Usage
@@ -95,3 +95,112 @@ FLASK_APP=web_app flask run
 export FLASK_APP=web_app
 flask run
 ```
+
+## Deploying to Production
+
+# Prerequisites
+
+If you haven't yet done so, [install the Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#download-and-install), and make sure you can login and list your applications.
+
+```sh
+heroku login # just a one-time thing when you use heroku for the first time
+
+heroku apps # at this time, results might be empty-ish
+```
+
+# Server Setup
+
+> IMPORTANT: run the following commands from the root directory of your repository!
+
+Use the online [Heroku Dashboard](https://dashboard.heroku.com/) or the command-line (instructions below) to [create a new application server](https://dashboard.heroku.com/new-app), specifying a unique name (e.g. "movie-lookup", but yours will need to be different):
+
+```sh
+heroku create movie-lookup # choose your own unique name!
+```
+
+Verify the app has been created:
+
+```sh
+heroku apps
+```
+
+Also verify this step has associated the local repo with a remote address called "heroku":
+
+```sh
+git remote -v
+```
+
+# Server Configuration
+
+Before we copy the source code to the remote server, we need to configure the server's environment in a similar way we configured our local environment.
+
+Instead of using a ".env" file, we will directly configure the server's environment variables by either clicking "Reveal Config Vars" from the "Settings" tab in your application's Heroku dashboard, or from the command line (instructions below):
+
+![a screenshot of setting env vars via the app's online dashboard](https://user-images.githubusercontent.com/1328807/54229588-f249e880-44da-11e9-920a-b11d4c210a99.png)
+
+```sh
+# or, alternatively...
+
+# get environment variables:
+heroku config # at this time, results might be empty-ish
+
+# set environment variables:
+heroku config:set APP_ENV="production" 
+heroku config:set OMDB_API_KEY="142571fd"
+heroku config:set YOUTUBE_API_KEY="AIzaSyAfHm3zCacK6HykMxuL8_Fs25At9oMMnT4"
+heroku config:set GOOGLE_SHEET_ID="1tKt_LQucVs2jRrXAVyprh2waB19SsMr-6-MZ3blnOk4"
+heroku config:set GOOGLE_SHEET_NAME="To Watch List"
+```
+
+At this point, you should be able to verify the production environment has been configured with the proper environment variable values:
+
+```sh
+heroku config
+```
+
+# Deploying
+
+After this configuration process is complete, you are finally ready to "deploy" the application's source code to the Heroku server:
+
+```sh
+git push heroku master
+```
+
+> NOTE: any time you update your source code, you can repeat this deployment command to upload your new code onto the server
+
+# Running the Script
+
+Once you've deployed the source code to the Heroku server, login to the server to see the files there, and take an opportunity to test your ability to run the script that now lives on the server:
+
+```sh
+heroku run bash # login to the server
+# ... whoami # see that you are not on your local computer anymore
+# ... ls -al # optionally see the files, nice!
+# ... python -m app.movie_lookup # see the output, nice!
+# ... exit # logout
+
+# or alternatively, run it from your computer, in "detached" mode:
+heroku run "python -m app.movie_lookup"
+```
+```sh
+git push heroku master
+```
+
+There are no scripts to be scheduled, so skip that part. Instead, you'll need to create a special file called the "Procfile" in the repo's root directory to instruct the Heroku server which command to invoke in order to run the app:
+
+```sh
+web: gunicorn "web_app:create_app()"
+```
+
+> NOTE: since we're instructing the server to use the "gunicorn" package (Heroku's preferred tool) to run the web app on production, we'll also need to add `gunicorn` to the "requirements.txt" file so it will be installed on the server during the deployment process.
+
+Save the "Procfile" and "requirements.txt" files, and make a commit before re-attempting to deploy your app to the server.
+
+```sh
+git push heroku master
+```
+
+View the server logs and troubleshoot as necessary until you're able to see the weather forecast in the browser. Nice!
+
+```sh
+heroku logs --tail

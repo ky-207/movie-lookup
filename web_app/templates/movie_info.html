@@ -4,6 +4,8 @@
 
     <h2>INFORMATION for {{ title_year }}</h2>
 
+    <p><img src="{{ poster }}" width=150></p>
+
     <ul>
         <li>Title: {{ title_name }} ({{ release_year }})</li>
         <li>Genre: {{ genre }}</li>
@@ -13,13 +15,14 @@
         <li>Rating: {{ rating }}</li>
     </ul>
 
-    <h2>Similar movies, if any:</h2>
+    <h4>Similar movies, if any:</h4>
     <ul>
         {% for element in get_title %}
             <li>{{ [element] }}</li>
         {% endfor %}
     </ul>
 
+    <h4>YouTube Trailer</h4>
     <iframe src="https://www.youtube.com/embed/{{ youtube_id }}" allowfullscreen="" width="25%" frameborder="0"></iframe>
 
     <form action="/movie/to-watch/added" method="POST">
