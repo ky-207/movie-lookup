@@ -78,3 +78,20 @@ Run the program:
 ```sh
 python app/movie_lookup.py
 ```
+
+## Web App Usage
+
+# Locally
+
+Although the program can be run on a command-line, you can also view it as a Flask App.
+
+The following command should run web application locally so you can view it in a browser at localhost:5000:
+
+```sh
+# Mac:
+FLASK_APP=web_app flask run
+
+# on windows:
+export FLASK_APP=web_app
+flask run
+```

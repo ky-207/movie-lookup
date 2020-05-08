@@ -16,13 +16,33 @@
     {% endfor %}
     </ul>
 
-    <p>Would you like to...</p>
+    <p></p>
 
-    <form name="options" action="/movie/to-watch" method="POST">
+    <form action="/movie/to-watch/deleted" method="POST">
+        <label for="option">Would you like to...</label>
+        <p><select id="option" name="option" required>
+            <option value="" disabled selected>Select an option</option>
+            <option value="2">Delete a title</option>
+            <option value="3">Clear list</option>
+        </select></p>
+
+        <p></p>
+        <p><label for="delete_id">If you'd like to delete a title, which one would you like to delete? Please select the corresponding ID #: </label>
+        <select id="delete_id" name="delete_id">
+            <option value="" disabled selected>Select an ID #</option>
+            {% for movie in movies %}
+            <option value= "{{ movie['ID'] }}">{{ movie['ID'] }}</option>"
+            {% endfor %}
+        </select></p>
+
+        <p><input class="button" type="submit" value="Submit" placeholder="Select an action"></p>
+    </form>
+
+    <!--<form name="options" action="/movie/to-watch" method="POST">
         <select name="option">
             <option value="Delete a title">Delete title</option>
             <option value="Clear list">Clear list</option>        
         </select>
-        <button>Submit</button>
+        <button>Submit</button>-->
 
 {% endblock %}

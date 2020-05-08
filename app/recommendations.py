@@ -37,7 +37,7 @@ def movie_recommendations(df, title):
     Returns the five movies that are similar to the movie the user has selected.
     Param: df (pandas function that reads a csv into a dataframe) like pd.read_csv("dataset.csv") and title (str) like correct_name
     Example: movie_recommendations(correct_name)
-    Returns: five recommended movies
+    Returns: list of five recommended movies (get_title)
     """
     movie_index = get_index_from_title(df, title)
     cv = CountVectorizer() # creating new CountVectorizer() object
@@ -47,12 +47,18 @@ def movie_recommendations(df, title):
     sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
     i=0
     print("Top 5 similar movies to "+title+" are:")
+    
+    get_title = []
+
     for element in sorted_similar_movies:
         print(" + " + get_title_from_index(df, element[0]))
+        get_title.append(get_title_from_index(df, element[0]))
+
         i=i+1
         if i>4:
             print("----------------------------------")
             break
+    return get_title
 
 if __name__ == "__main__":
 

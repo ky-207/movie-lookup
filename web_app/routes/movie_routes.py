@@ -9,7 +9,7 @@ from app.search_service import get_response, get_response_2, print_sr, title_exc
 
 from app.recommendations import combine_features, get_title_from_index, get_index_from_title, movie_recommendations
 
-from app.to_watch_service import SpreadsheetService
+from app.to_watch_service import SpreadsheetService, user_options
 
 movie_routes = Blueprint("movie_routes", __name__)
 
@@ -37,6 +37,7 @@ def search_results():
     org_list = []
     print_sr(sr, org_list)
 
+    # store the variable so it can be used in a different route
     session["sr"] = sr
     session["org_list"] = org_list
     
@@ -93,26 +94,15 @@ def display_info():
     df["combined_features"] = df.apply(combine_features, axis=1)
     while True:
         try:
-            movie_index = get_index_from_title(df, correct_name)
-            cv = CountVectorizer() 
-            count_matrix = cv.fit_transform(df["combined_features"])
-            cosine_sim = cosine_similarity(count_matrix)
-            similar_movies = list(enumerate(cosine_sim[movie_index]))
-            sorted_similar_movies = sorted(similar_movies,key=lambda x:x[1],reverse=True)[1:]
-            i=0
-            get_title = []
-            for element in sorted_similar_movies:
-                get_title.append(get_title_from_index(df, element[0]))
-                i=i+1
-                if i>4:
-                    print("----------------------------------")
-                    break
+            get_title = movie_recommendations(df, correct_name)
+
             break
         except IndexError:
             print("Sorry, we couldn't find any recommendations for that title.")
             print("----------------------------------")
+
+            get_title = []
             break
-    print(get_title)
     return render_template("movie_info.html", title_year=title_year, title_name=title_name, release_year=release_year, genre=genre, director=director, cast=cast, summary=summary, rating=rating, youtube_id=youtube_id, get_title=get_title)
 
 
@@ -163,64 +153,30 @@ def add():
 
 @movie_routes.route('/movie/to-watch/deleted', methods=["GET", "POST"])
 def delete():
-
-    # code so that it leads to this page if delete option is selected?
-    if request.method == "GET":
-        ButtonPressed=0
-        ButtonPressed += 1
-        return render_template("to_watch.html", ButtonPressed = ButtonPressed)
+    option = request.form.get("option")
+    delete_id = request.form.get("delete_id")
 
     print("VISITING THE TO-WATCH PAGE")
     ss = SpreadsheetService()
     sheet, movies = ss.get_movies()
 
-    # need to ask for user to enter movie_id they wish to delete on html page, idk how to do this
-    matching_movies = [m for m in self.movies if str(m["ID"]) == str(movie_id)]
-    while True:
-        try:
-            matching_movie_title = matching_movies[0]["Title"]
-            doc = self.client.open_by_key(self.sheet_id)
-            worksheet = doc.worksheet(self.sheet_name)
-            cell = worksheet.find(matching_movie_title)
-            row = cell.row
-            worksheet.delete_rows(row)
-            print(f"{matching_movie_title} has been deleted from your watch list.")
-            break
-        except (IndexError, gspread.exceptions.CellNotFound):
-            print("The movie associated with this id does not exist in this list. Sorry!") # also need to return an error page...?
-            break
+
+    if option == "2":
+        print("DELETING MOVIE:", delete_id)
+        ss.destroy_movie(delete_id)
+        print("----------------------------------")
+        flash(f"Title: ID #{delete_id} deleted successfully!", "warning")
+
+    elif option == "3":
+        print("CLEARED LIST")
+        user_options(option, ss)
+        flash(f"List cleared successfully!", "warning")
+
 
     sheet, movies = ss.get_movies()
 
     print(f"LISTING TITLES FROM THE '{sheet.title}' SHEET")
     for movie in movies:
         print(" + " + str(movie["ID"]) + ": " + movie["Title"])
-
-    flash(f"Title '{movie['Title']}' deleted successfully!", "warning")
     
     return render_template("to_watch.html", movies=movies, sheet_name=sheet.title, sheet_id= ss.sheet_id)
-
-@movie_routes.route('/movie/to-watch/listcleared', methods=["GET", "POST"])
-def clear():
-
-    # code so that it leads to this page if clear list option is selected?
-    if request.method == "GET":
-        ButtonPressed=0
-        ButtonPressed += 1
-        return render_template("to_watch.html", ButtonPressed = ButtonPressed)
-
-    ss = SpreadsheetService()
-    sheet, movies = ss.get_movies()
-
-    doc = self.client.open_by_key(self.sheet_id)
-    worksheet = doc.worksheet(self.sheet_name)
-    worksheet.resize(rows=1)
-    worksheet.resize(rows=30)
-
-    sheet, movies = ss.get_movies()
-
-    print("CLEARING LIST...")
-
-    flash("The to-watch list has been cleared!", "warning")
-
-    return render_template("to_watch.html", movies=movies, sheet_name=sheet.title, sheet_id=ss.sheet_id)
