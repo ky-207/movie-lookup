@@ -17,7 +17,7 @@ google-auth-oauthlib==0.4.1
 googleapis-common-protos==1.51.0
 gspread==3.6.0
 gunicorn
-httplib2==0.17.3
+httplib2==0.19.0
 idna==2.9
 importlib-metadata==1.6.0
 itsdangerous==1.1.0
